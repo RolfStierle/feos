@@ -266,13 +266,13 @@ impl EntropyScaling for PcSaft {
             .viscosity
             .as_ref()
             .expect("Missing viscosity coefficients.");
-        let m = (x * &self.params.m).sum();
+        let m = x.dot(&self.params.m);
         let s = s_res / m;
-        let pref = (x * &self.params.m) / m;
-        let a = coefficients.row(0).dot(x);
-        let b = coefficients.row(1).dot(&pref);
-        let c = coefficients.row(2).dot(&pref);
-        let d = coefficients.row(3).dot(&pref);
+        let pref = x.component_mul(&self.params.m) / m;
+        let a = coefficients.row(0).transpose().dot(x);
+        let b = coefficients.row(1).transpose().dot(&pref);
+        let c = coefficients.row(2).transpose().dot(&pref);
+        let d = coefficients.row(3).transpose().dot(&pref);
         a + b * s + c * s.powi(2) + d * s.powi(3)
     }
 
@@ -307,14 +307,14 @@ impl EntropyScaling for PcSaft {
             .diffusion
             .as_ref()
             .expect("Missing diffusion coefficients.");
-        let m = (x * &self.params.m).sum();
+        let m = x.dot(&self.params.m);
         let s = s_res / m;
-        let pref = (x * &self.params.m).map(|v| v / m);
-        let a = coefficients.row(0).dot(x);
-        let b = coefficients.row(1).dot(&pref);
-        let c = coefficients.row(2).dot(&pref);
-        let d = coefficients.row(3).dot(&pref);
-        let e = coefficients.row(4).dot(&pref);
+        let pref = x.component_mul(&self.params.m) / m;
+        let a = coefficients.row(0).transpose().dot(x);
+        let b = coefficients.row(1).transpose().dot(&pref);
+        let c = coefficients.row(2).transpose().dot(&pref);
+        let d = coefficients.row(3).transpose().dot(&pref);
+        let e = coefficients.row(4).transpose().dot(&pref);
         a + b * s - c * (1.0 - s.exp()) * s.powi(2) - d * s.powi(4) - e * s.powi(8)
     }
 
@@ -371,13 +371,13 @@ impl EntropyScaling for PcSaft {
             .thermal_conductivity
             .as_ref()
             .expect("Missing thermal conductivity coefficients");
-        let m = (x * &self.params.m).sum();
+        let m = x.dot(&self.params.m);
         let s = s_res / m;
-        let pref = (x * &self.params.m).map(|v| v / m);
-        let a = coefficients.row(0).dot(x);
-        let b = coefficients.row(1).dot(&pref);
-        let c = coefficients.row(2).dot(&pref);
-        let d = coefficients.row(3).dot(&pref);
+        let pref = x.component_mul(&self.params.m) / m;
+        let a = coefficients.row(0).transpose().dot(x);
+        let b = coefficients.row(1).transpose().dot(&pref);
+        let c = coefficients.row(2).transpose().dot(&pref);
+        let d = coefficients.row(3).transpose().dot(&pref);
         a + b * s + c * (1.0 - s.exp()) + d * s.powi(2)
     }
 }
