@@ -138,13 +138,18 @@ impl Dippr {
 
 const RGAS: f64 = 8.31446261815324 * 1000.0;
 const T0: f64 = 298.15;
+const P0: f64 = 1.0e5;
+const A3: f64 = 1e-30;
+const KB: f64 = 1.38064852e-23;
 
 impl IdealGas for Dippr {
     fn ln_lambda3<D: DualNum<f64> + Copy>(&self, temperature: D) -> D {
         let t = temperature;
-        let h = self.c_p_integral(t) - self.c_p_integral(T0);
-        let s = self.c_p_t_integral(t) - self.c_p_t_integral(T0);
-        (h - t * s) / (t * RGAS) + temperature.ln()
+        let standard_enthalpy_formation_ig_t0 = D::from(0.0);
+        let standard_entropy_formation_ig_t0 = D::from(0.0);
+        let h = standard_enthalpy_formation_ig_t0 + self.c_p_integral(t) - self.c_p_integral(T0);
+        let s = standard_entropy_formation_ig_t0 + self.c_p_t_integral(t) - self.c_p_t_integral(T0);
+        (h - t * s) / (t * RGAS) + (temperature * KB / (P0 * A3)).ln()
     }
 
     fn ideal_gas_model(&self) -> &'static str {

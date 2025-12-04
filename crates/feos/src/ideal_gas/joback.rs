@@ -100,15 +100,17 @@ impl<D: DualNum<f64> + Copy> IdealGas<D> for Joback<D> {
     fn ln_lambda3<D2: DualNum<f64, Inner = D> + Copy>(&self, temperature: D2) -> D2 {
         let [a, b, c, d, e] = self.0.each_ref().map(D2::from_inner);
         let t = temperature;
+        let standard_enthalpy_formation_ig_t0 = D2::from(0.0);
+        let standard_entropy_formation_ig_t0 = D2::from(0.0);
         let t2 = t * t;
         let t4 = t2 * t2;
         let f = (temperature * KB / (P0 * A3)).ln();
-        let h = (t2 - T0_2) * 0.5 * b
+        let h = standard_enthalpy_formation_ig_t0 + (t2 - T0_2) * 0.5 * b
             + (t * t2 - T0_3) * c / 3.0
             + (t4 - T0_4) * d / 4.0
             + (t4 * t - T0_5) * e / 5.0
             + (t - T0) * a;
-        let s = (t - T0) * b
+        let s = standard_entropy_formation_ig_t0 + (t - T0) * b
             + (t2 - T0_2) * 0.5 * c
             + (t2 * t - T0_3) * d / 3.0
             + (t4 - T0_4) * e / 4.0
